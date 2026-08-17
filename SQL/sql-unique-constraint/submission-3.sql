@@ -1,7 +1,7 @@
-CREATE TABLE PRODUCTS (
-    NAME TEXT NOT NULL DEFAULT 'Unknown',
-    price INTEGER not null,
-    quantity integer default 0
+CREATE TABLE STUDENTS (
+    ID INTEGER UNIQUE NOT NULL,
+    NAME TEXT NOT NULL,
+    AGE INTEGER NOT NULL
 );
 
 
@@ -10,6 +10,22 @@ CREATE TABLE PRODUCTS (
 
 
 -- Do not modify below this line --
-SELECT column_name, data_type, is_nullable, column_default
-FROM information_schema.columns
-WHERE table_name = 'products';
+SELECT 
+    column_name, 
+    is_nullable,
+    column_default,
+    CASE 
+        WHEN column_name IN (
+            SELECT column_name 
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.constraint_column_usage ccu 
+                ON tc.constraint_name = ccu.constraint_name
+            WHERE tc.table_name = 'students' 
+                AND tc.constraint_type IN ('UNIQUE')
+        ) THEN 'YES'
+        ELSE 'NO'
+    END AS is_unique
+FROM 
+    information_schema.columns
+WHERE 
+    table_name = 'students';
